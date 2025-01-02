@@ -9,4 +9,8 @@ use Filament\Resources\Pages\CreateRecord;
 class CreatePertemuan extends CreateRecord
 {
     protected static string $resource = PertemuanResource::class;
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
 }
