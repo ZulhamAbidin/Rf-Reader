@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class siswa extends Model
 {
     use HasFactory;
-    protected $fillable = ['nama', 'rfid_id'];
+    protected $table = 'siswa';
+    protected $fillable = ['nama', 'rfid_id', 'kelas_id'];
 
-     /**
-     * Relasi ke Absensi (Seorang siswa dapat memiliki banyak absensi)
-     */
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
+
     public function absensis()
     {
         return $this->hasMany(Absensi::class);

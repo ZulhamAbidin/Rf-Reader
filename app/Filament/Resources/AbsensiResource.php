@@ -6,6 +6,7 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Siswa;
 use App\Models\Absensi;
+use App\Models\GerbangAbsensi;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -14,11 +15,9 @@ use Filament\Forms\Components\Hidden;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 use App\Filament\Resources\AbsensiResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\AbsensiResource\RelationManagers;
 
 class AbsensiResource extends Resource
 {
@@ -35,17 +34,33 @@ class AbsensiResource extends Resource
                 ->reactive()
                 ->afterStateUpdated(function ($state, $set) {
                     $siswa = Siswa::where('rfid_id', $state)->first();
-                    
+
                     if ($siswa) {
                         $set('siswa_id', $siswa->id);
                         $set('nama', $siswa->nama);
 
-                        static::autoSave(
-                            [
-                                'siswa_id' => $siswa->id,
-                            ],
-                            $set,
-                        );
+                        $currentTime = Carbon::now();
+                        $validGerbang = GerbangAbsensi::where('kelas_id', $siswa->kelas_id)
+                            ->where('waktu_mulai', '<=', $currentTime)
+                            ->where('waktu_selesai', '>=', $currentTime)
+                            ->exists();
+
+                        if ($validGerbang) {
+                            static::autoSave(
+                                [
+                                    'siswa_id' => $siswa->id,
+                                    'gerbang_absensi_id' => GerbangAbsensi::where('kelas_id', $siswa->kelas_id)
+                                        ->where('waktu_mulai', '<=', $currentTime)
+                                        ->where('waktu_selesai', '>=', $currentTime)
+                                        ->first()->id,
+                                    'status_kehadiran' => 'hadir',
+                                    'waktu_kehadiran' => $currentTime,
+                                ],
+                                $set,
+                            );
+                        } else {
+                            Notification::make()->title('Absensi Gagal')->body('Tidak ada gerbang absensi yang aktif untuk siswa ini.')->warning()->send();
+                        }
                     } else {
                         $set('siswa_id', null);
                         $set('nama', null);
@@ -59,64 +74,69 @@ class AbsensiResource extends Resource
     public static function autoSave(array $data, $set): void
     {
         $validator = Validator::make($data, [
-            'siswa_id' => 'required|exists:siswas,id',
+            'siswa_id' => 'required|exists:siswa,id',
+            'gerbang_absensi_id' => 'required|exists:gerbangabsensi,id',
         ]);
 
         if ($validator->fails()) {
+            Notification::make()->title('Validasi Gagal')->body('Data tidak valid untuk absensi.')->warning()->send();
             return;
         }
 
-        Absensi::create($data);
+        $existingAbsensi = Absensi::where('siswa_id', $data['siswa_id'])
+            ->where('gerbang_absensi_id', $data['gerbang_absensi_id'])
+            ->first();
 
-        Notification::make()
-            ->title('Absensi Berhasil!')
-            ->body('Absensi untuk siswa telah berhasil disimpan.')
-            ->success()
-            ->send();
+        if (!$existingAbsensi) {
+            Absensi::create([
+                'siswa_id' => $data['siswa_id'],
+                'gerbang_absensi_id' => $data['gerbang_absensi_id'],
+                'status_kehadiran' => 'hadir',
+                'waktu_kehadiran' => Carbon::now(),
+            ]);
+        } else {
+            if ($existingAbsensi->status_kehadiran != 'hadir') {
+                $existingAbsensi->update([
+                    'status_kehadiran' => 'hadir',
+                    'waktu_kehadiran' => Carbon::now(),
+                ]);
+            }
+        }
+
+        Notification::make()->title('Absensi Berhasil')->body('Absensi untuk siswa telah berhasil disimpan.')->success()->send();
+        $kelasId = GerbangAbsensi::find($data['gerbang_absensi_id'])->kelas_id;
+        $siswaHadirIds = Absensi::where('gerbang_absensi_id', $data['gerbang_absensi_id'])
+            ->whereNotNull('waktu_kehadiran')
+            ->pluck('siswa_id')
+            ->toArray();
+
+        $siswaBelumHadir = Siswa::where('kelas_id', $kelasId)->whereNotIn('id', $siswaHadirIds)->get();
+        foreach ($siswaBelumHadir as $siswa) {
+            Absensi::create([
+                'siswa_id' => $siswa->id,
+                'gerbang_absensi_id' => $data['gerbang_absensi_id'],
+                'status_kehadiran' => 'alfa',
+                'waktu_kehadiran' => null,
+            ]);
+        }
 
         $set('rfid_id', null);
         $set('siswa_id', null);
-        $set('namaa', null);
+        $set('nama', null);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                TextColumn::make('siswa.nama')
-                    ->label('Nama Siswa')
-                    ->copyable()
-                    ->copyMessage('Berhasil Menyalin Nama Siswa')
-                    ->sortable()
-                    ->searchable(),
-                    
-                TextColumn::make('created_at')
-                    ->label('Waktu Absensi')
-                    ->sortable(),
-                    ])
-
-            ->filters([
-                
-            ])
-
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-            ])
+            ->columns([TextColumn::make('siswa.nama')->label('Nama Siswa')->copyable()->copyMessage('Berhasil Menyalin Nama Siswa')->sortable()->searchable(), TextColumn::make('gerbangAbsensi.waktu_mulai')->label('Waktu Mulai')->searchable()->sortable(), TextColumn::make('gerbangAbsensi.waktu_selesai')->label('Waktu Selesai')->searchable()->sortable(), TextColumn::make('status_kehadiran')->label('Status Kehadiran')->sortable()->searchable(), TextColumn::make('created_at')->label('Waktu Absensi')->sortable()])
+            ->actions([Tables\Actions\EditAction::make(), Tables\Actions\DeleteAction::make()])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-                //
-            ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAbsensis::route('/'),
+            'index' => Pages\ListAbsensi::route('/'),
             'create' => Pages\CreateAbsensi::route('/create'),
             'edit' => Pages\EditAbsensi::route('/{record}/edit'),
         ];

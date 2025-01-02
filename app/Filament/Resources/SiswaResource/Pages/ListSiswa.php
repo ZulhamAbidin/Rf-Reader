@@ -6,7 +6,7 @@ use App\Filament\Resources\SiswaResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListSiswas extends ListRecords
+class ListSiswa extends ListRecords
 {
     protected static string $resource = SiswaResource::class;
 
