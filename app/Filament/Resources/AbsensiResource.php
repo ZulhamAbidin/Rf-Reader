@@ -128,9 +128,72 @@ class AbsensiResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([TextColumn::make('siswa.nama')->label('Nama Siswa')->copyable()->copyMessage('Berhasil Menyalin Nama Siswa')->sortable()->searchable(), TextColumn::make('gerbangAbsensi.waktu_mulai')->label('Waktu Mulai')->searchable()->sortable(), TextColumn::make('gerbangAbsensi.waktu_selesai')->label('Waktu Selesai')->searchable()->sortable(), TextColumn::make('status_kehadiran')->label('Status Kehadiran')->sortable()->searchable(), TextColumn::make('created_at')->label('Waktu Absensi')->sortable()])
-            ->actions([Tables\Actions\EditAction::make(), Tables\Actions\DeleteAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+            ->columns([
+                TextColumn::make('siswa.nama')
+                ->label('Nama Siswa')
+                ->copyable()
+                ->copyMessage('Berhasil Menyalin Nama Siswa')
+                ->sortable()
+                ->searchable(),
+                
+                TextColumn::make('gerbangAbsensi.waktu_mulai')
+                ->label('Waktu Mulai')
+                ->searchable()
+                ->sortable()
+                ->formatStateUsing(function ($state) {
+                    return '<div class="text-center">'
+                        . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>'
+                        . Carbon::parse($state)->translatedFormat('d F Y')
+                        . '</div>';
+                })
+                ->html(), 
+                
+                // memastikan HTML akan diproses
+                // ->formatStateUsing(function ($state) {
+                //     return Carbon::parse($state)->translatedFormat('H:i l, d F Y');
+                // }),
+                
+                TextColumn::make('gerbangAbsensi.waktu_selesai')
+                ->label('Waktu Selesai')
+                ->searchable()
+                ->sortable()
+                ->formatStateUsing(function ($state) {
+                    return '<div class="text-center">'
+                        . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>'
+                        . Carbon::parse($state)->translatedFormat('d F Y')
+                        . '</div>';
+                })
+                ->html(), 
+                
+                TextColumn::make('status_kehadiran')
+                ->badge()
+                ->color(fn (string $state): string => match ($state) {
+                    'hadir' => 'success',
+                    'alfa' => 'danger',
+                })
+                ->label('Status')
+                ->sortable()
+                ->searchable(), TextColumn::make('created_at')
+                ->label('Waktu Absensi')
+                ->sortable()
+                ->formatStateUsing(function ($state) {
+                    return '<div class="text-center">'
+                        . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>'
+                        . Carbon::parse($state)->translatedFormat('d F Y')
+                        . '</div>';
+                })
+                ->html(), 
+                
+                ]
+                
+                )
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                ])
+
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
     }
 
     public static function getPages(): array
