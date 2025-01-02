@@ -135,6 +135,13 @@ class AbsensiResource extends Resource
                 ->copyMessage('Berhasil Menyalin Nama Siswa')
                 ->sortable()
                 ->searchable(),
+
+                TextColumn::make('gerbangAbsensi.mataPelajaran.nama_mata_pelajaran')
+                ->label('Mata Pelajaran')
+                ->copyable()
+                ->copyMessage('Berhasil Menyalin')
+                ->sortable()
+                ->searchable(),
                 
                 TextColumn::make('gerbangAbsensi.waktu_mulai')
                 ->label('Waktu Mulai')
@@ -147,11 +154,6 @@ class AbsensiResource extends Resource
                         . '</div>';
                 })
                 ->html(), 
-                
-                // memastikan HTML akan diproses
-                // ->formatStateUsing(function ($state) {
-                //     return Carbon::parse($state)->translatedFormat('H:i l, d F Y');
-                // }),
                 
                 TextColumn::make('gerbangAbsensi.waktu_selesai')
                 ->label('Waktu Selesai')

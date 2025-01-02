@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+// Lorem, ipsum.
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -15,6 +17,12 @@ class siswa extends Model
     {
         return $this->belongsTo(Kelas::class);
     }
+
+    public function gerbangAbsensi()
+{
+    return $this->hasMany(GerbangAbsensi::class);
+}
+
 
     public function absensis()
     {
