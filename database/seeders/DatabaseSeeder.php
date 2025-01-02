@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             MataPelajaranSeeder::class,
             KelasSeeder::class,
             SiswaSeeder::class,
+            PertemuanSeeder::class,
             GerbangAbsensiSeeder::class,
             AbsensiSeeder::class,
             UserSeeder::class,

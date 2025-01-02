@@ -6,17 +6,18 @@ use Filament\Forms;
 use Filament\Tables;
 use App\Models\Siswa;
 use App\Models\Absensi;
-use App\Models\GerbangAbsensi;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\GerbangAbsensi;
+use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Button;
 use Filament\Forms\Components\Hidden;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon;
 use App\Filament\Resources\AbsensiResource\Pages;
 
 class AbsensiResource extends Resource
@@ -129,6 +130,8 @@ class AbsensiResource extends Resource
     {
         return $table
             ->columns([
+
+                
                 TextColumn::make('siswa.nama')
                 ->label('Nama Siswa')
                 ->copyable()
@@ -184,18 +187,34 @@ class AbsensiResource extends Resource
                         . Carbon::parse($state)->translatedFormat('d F Y')
                         . '</div>';
                 })
-                ->html(), 
-                
-                ]
-                
-                )
+                ->html(),     
+            ])
+
+            ->filters([
+                SelectFilter::make('pertemuan')
+                    ->label('Pertemuan')
+                    ->relationship('gerbangAbsensi.pertemuan', 'pertemuanke')
+                    ->searchable(),
+    
+                SelectFilter::make('nama_kelas')
+                    ->label('Nama Kelas')
+                    ->relationship('gerbangAbsensi.kelas', 'nama_kelas')
+                    ->searchable(),
+    
+                SelectFilter::make('nama_mata_pelajaran')
+                    ->label('Nama Mata Pelajaran')
+                    ->relationship('gerbangAbsensi.mataPelajaran', 'nama_mata_pelajaran')
+                    ->searchable(),
+            ])
+            
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                ])
+            ])
 
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+                Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])
+            ]);
     }
 
     public static function getPages(): array

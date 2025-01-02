@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
@@ -29,7 +30,7 @@ class GerbangAbsensiResource extends Resource
                 ->required(),
 
                 DateTimePicker::make('waktu_selesai')
-                ->label('Dimulai Pada')
+                ->label('Berakhir Pada')
                 ->required(),
 
                 Select::make('kelas_id')
@@ -41,6 +42,11 @@ class GerbangAbsensiResource extends Resource
                 ->required()
                 ->label('Nama Mata Pelajaran')
                 ->relationship('matapelajaran', 'nama_mata_pelajaran'),
+
+                Select::make('pertemuan_id')
+                ->required()
+                ->label('Pertemuan Ke')
+                ->relationship('pertemuan', 'pertemuanke'),
             ]);
     }
 
@@ -48,8 +54,31 @@ class GerbangAbsensiResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('waktu_mulai'),
-                TextColumn::make('waktu_selesai'),
+                TextColumn::make('waktu_mulai')
+                ->formatStateUsing(function ($state) {
+                    return '<div class="text-center">'
+                        . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>'
+                        . Carbon::parse($state)->translatedFormat('d F Y')
+                        . '</div>';
+                })
+                ->html(),
+
+
+                TextColumn::make('waktu_selesai')
+                ->formatStateUsing(function ($state) {
+                    return '<div class="text-center">'
+                        . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>'
+                        . Carbon::parse($state)->translatedFormat('d F Y')
+                        . '</div>';
+                })
+                ->html(),
+
+                TextColumn::make('pertemuan.pertemuanke')
+                ->label('Pertemuan')
+                    ->copyable()
+                    ->copyMessage('Berhasil Menyalin')
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('kelas.nama_kelas')
                 ->label('Nama Kelas')
