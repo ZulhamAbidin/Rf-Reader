@@ -9,14 +9,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class absensi extends Model
 {
     use HasFactory;
-    protected $fillable = ['siswa_id'];
+    protected $table = 'absensi';
+    protected $fillable = ['siswa_id', 'gerbang_absensi_id', 'status_kehadiran', 'waktu_kehadiran'];
 
-    /**
-     * Relasi ke Siswa (Setiap absensi milik satu siswa)
-     */
     public function siswa()
     {
         return $this->belongsTo(Siswa::class);
+    }
+    
+    public function gerbangAbsensi()
+    {
+        return $this->belongsTo(GerbangAbsensi::class);
     }
 
     protected static function booted()

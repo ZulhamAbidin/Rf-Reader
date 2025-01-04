@@ -1,0 +1,138 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use Carbon\Carbon;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Models\GerbangAbsensi;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\DateTimePicker;
+use App\Filament\Resources\GerbangAbsensiResource\Pages;
+
+class GerbangAbsensiResource extends Resource
+{
+    protected static ?string $model = GerbangAbsensi::class;
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Presensi';
+    protected static ?string $label = 'Jalankan Presensi';
+
+    
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                DateTimePicker::make('waktu_mulai')
+                ->label('Dimulai Pada')
+                ->required(),
+
+                DateTimePicker::make('waktu_selesai')
+                ->label('Berakhir Pada')
+                ->required(),
+
+                Select::make('kelas_id')
+                ->required()
+                ->label('Nama Kelas')
+                ->relationship('kelas', 'nama_Kelas'),
+
+                Select::make('mata_pelajaran_id')
+                ->required()
+                ->label('Nama Mata Pelajaran')
+                ->relationship('matapelajaran', 'nama_mata_pelajaran'),
+
+                Select::make('pertemuan_id')
+                ->required()
+                ->label('Pertemuan Ke')
+                ->relationship('pertemuan', 'pertemuanke'),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                
+                TextColumn::make('waktu_mulai')
+                    ->formatStateUsing(function ($state, $record) {
+                        $waktuMulai = Carbon::parse($record->waktu_mulai)->translatedFormat('H:i');
+                        $waktuSelesai = Carbon::parse($record->waktu_selesai)->translatedFormat('H:i');
+                        $tanggal = Carbon::parse($record->waktu_selesai)->translatedFormat('l, d F Y');
+                        
+                        return $waktuMulai . ' - ' . $waktuSelesai . ' ' . $tanggal;
+                }),
+
+                TextColumn::make('kelas.nama_kelas')
+                ->label('Nama Kelas')
+                    ->copyable()
+                    ->copyMessage('Berhasil Menyalin Nama Kelas')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('matapelajaran.nama_mata_pelajaran')
+                ->label('Nama Mata Pelajaran')
+                    ->copyable()
+                    ->copyMessage('Berhasil Menyalin Nama Mata Pelajaran')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('pertemuan.pertemuanke')
+                ->label('P')
+                    ->copyable()
+                    ->copyMessage('Berhasil Menyalin')
+                    ->sortable()
+                    ->searchable()
+                    ->tooltip('Pertemuan Ke')
+                    ->searchable(),
+            ])
+
+            ->filters([
+                //
+            ])
+
+            ->actions([
+                Tables\Actions\Action::make('deteksiAbsensi')
+                    ->label('Lihat Hasil')
+                    ->color('primary')
+                    ->icon('heroicon-o-eye')
+                    ->tooltip('Lihat Hasil Rekap Presensi Secara Detail')
+                    ->url(fn () => url('/admin/absensis/deteksi-absensi')),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+
+            ->headerActions([
+                Tables\Actions\Action::make('deteksiAbsensi')
+                    ->label('Jalankan Presensi')
+                    ->url(fn () => url('/admin/absensis/create'))
+                    ->tooltip('Sebelum Memulai Menjalankan Presensi Pastikan Anda Membuka Gerbang Prensesi Terlebih Dahulu')
+                    // ->url(fn () => url('/admin/absensis/deteksi-absensi'))
+                    ->openUrlInNewTab(),
+                
+                Tables\Actions\Action::make('deteksiAbsensi')
+                    ->label('Buka Gerbang Presensi')
+                    ->url(fn () => url('/admin/gerbang-absensis/create'))
+                    // ->url(fn () => url('/admin/absensis/deteksi-absensi'))
+            ])
+
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+                
+            ]);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListGerbangAbsensis::route('/'),
+            'create' => Pages\CreateGerbangAbsensi::route('/create'),
+            'edit' => Pages\EditGerbangAbsensi::route('/{record}/edit'),
+            // 'DeteksiAbsensi' => Pages\DeteksiAbsensi::route('/deteksi-absensi'),
+            // 'create' => \App\Filament\Resources\AbsensiResource\Pages\CreateAbsensi::route('/create'),
+        ];
+    }
+}
