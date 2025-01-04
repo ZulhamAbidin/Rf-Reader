@@ -10,10 +10,11 @@ class ListGerbangAbsensis extends ListRecords
 {
     protected static string $resource = GerbangAbsensiResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+    // protected function getHeaderActions(): array
+    // {
+    //     return [
+    //         Actions\CreateAction::make()
+    //         ->label('Buka Gerbang Presensi'),
+    //     ];
+    // }
 }

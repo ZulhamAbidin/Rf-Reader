@@ -2,27 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use Filament\Tables;
 use App\Models\Siswa;
-use App\Models\Kelas;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\SiswaResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\SiswaResource\Pages\ListSiswa;
-use App\Filament\Resources\SiswaResource\RelationManagers;
 
 class SiswaResource extends Resource
 {
     protected static ?string $model = Siswa::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Data Sekolah';
+    protected static ?string $label = 'Siswa';
 
     public static function form(Form $form): Form
     {
@@ -81,7 +77,7 @@ class SiswaResource extends Resource
         return [
             'index' => Pages\ListSiswa::route('/'),
             'create' => Pages\CreateSiswa::route('/create'),
-            'edit' => Pages\EditSiswa::route('/{record}/edit'),
+            'edit' => Pages\EditSiswa::route('/{record}/edit')
         ];
     }
 }

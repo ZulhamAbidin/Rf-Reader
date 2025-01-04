@@ -3,28 +3,24 @@
 namespace App\Filament\Resources;
 
 use Carbon\Carbon;
-use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Pertemuan;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Tables\Columns\Column;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Resources\PertemuanResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\PertemuanResource\RelationManagers;
 
 class PertemuanResource extends Resource
 {
     protected static ?string $model = Pertemuan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Data Sekolah';
+    protected static ?string $label = 'Pertemuan';
 
     public static function form(Form $form): Form
     {

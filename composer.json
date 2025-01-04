@@ -7,9 +7,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.31",
         "filament/filament": "^3.0",
-        "laravel/tinker": "^2.9"
+        "filament/tables": "^3.2",
+        "laravel/framework": "^11.31",
+        "laravel/tinker": "^2.9",
+        "psr/simple-cache": "2.0",
+        "pxlrbt/filament-excel": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

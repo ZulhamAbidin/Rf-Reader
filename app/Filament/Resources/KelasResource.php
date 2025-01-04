@@ -20,6 +20,9 @@ class KelasResource extends Resource
     protected static ?string $model = Kelas::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Data Sekolah';
+    protected static ?string $label = 'Kelas';
+    
 
     public static function form(Form $form): Form
     {

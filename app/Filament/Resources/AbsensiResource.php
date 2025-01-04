@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use Filament\Tables;
 use App\Models\Siswa;
 use App\Models\Absensi;
@@ -11,7 +10,6 @@ use Filament\Tables\Table;
 use App\Models\GerbangAbsensi;
 use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Button;
 use Filament\Forms\Components\Hidden;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
@@ -23,8 +21,9 @@ use App\Filament\Resources\AbsensiResource\Pages;
 class AbsensiResource extends Resource
 {
     protected static ?string $model = Absensi::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Presensi';
+    protected static ?string $label = 'Semua Hasil Presensi';
 
     public static function form(Form $form): Form
     {
@@ -130,30 +129,32 @@ class AbsensiResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('gerbangAbsensi.pertemuan.pertemuanke')->label('Pertemuan Ke')->sortable()->searchable(),
 
-                TextColumn::make('siswa.nama')->label('Nama Siswa')->copyable()->copyMessage('Berhasil Menyalin Nama Siswa')->sortable()->searchable(),
+                TextColumn::make('siswa.nama')
+                    ->label('Nama Siswa')
+                    ->copyable()
+                    ->copyMessage('Berhasil Menyalin Nama Siswa')
+                    ->sortable()
+                    ->searchable(),
 
-                TextColumn::make('gerbangAbsensi.mataPelajaran.nama_mata_pelajaran')->label('Mata Pelajaran')->copyable()->copyMessage('Berhasil Menyalin')->sortable()->searchable(),
+                TextColumn::make('gerbangAbsensi.mataPelajaran.nama_mata_pelajaran')
+                    ->label('Mata Pelajaran')
+                    ->copyable()
+                    ->copyMessage('Berhasil Menyalin')
+                    ->sortable()
+                    ->searchable(),
 
-                TextColumn::make('gerbangAbsensi.waktu_mulai')
-                    ->label('Waktu Mulai')
-                    ->searchable()
+                TextColumn::make('created_at')
+                    ->label('Waktu Presensi')
                     ->sortable()
                     ->formatStateUsing(function ($state) {
-                        return '<div class="text-center">' . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>' . Carbon::parse($state)->translatedFormat('d F Y') . '</div>';
-                    })
+                        return 
+                            Carbon::parse($state)->translatedFormat('H:i') . ' ' . 
+                            Carbon::parse($state)->translatedFormat('l') . ' ' . 
+                            Carbon::parse($state)->translatedFormat('d F Y');
+                        })
                     ->html(),
-
-                TextColumn::make('gerbangAbsensi.waktu_selesai')
-                    ->label('Waktu Selesai')
-                    ->searchable()
-                    ->sortable()
-                    ->formatStateUsing(function ($state) {
-                        return '<div class="text-center">' . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>' . Carbon::parse($state)->translatedFormat('d F Y') . '</div>';
-                    })
-                    ->html(),
-
+                    
                 TextColumn::make('status_kehadiran')
                     ->badge()
                     ->color(
@@ -165,23 +166,58 @@ class AbsensiResource extends Resource
                     ->label('Status')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('created_at')
-                    ->label('Waktu Absensi')
+
+                    TextColumn::make('gerbangAbsensi.waktu_mulai')
+                    ->label('Waktu Mulai & Berakhirnya Presensi')
+                    ->searchable()
                     ->sortable()
-                    ->formatStateUsing(function ($state) {
-                        return '<div class="text-center">' . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>' . Carbon::parse($state)->translatedFormat('d F Y') . '</div>';
+                    ->formatStateUsing(function ($state, $record) {
+                        $waktuMulai = Carbon::parse($record->gerbangAbsensi->waktu_mulai)->translatedFormat('H:i');
+                        $waktuSelesai = Carbon::parse($record->gerbangAbsensi->waktu_selesai)->translatedFormat('H:i');
+                        $tanggal = Carbon::parse($record->gerbangAbsensi->waktu_selesai)->translatedFormat('l, d F Y');
+                        
+                        return $waktuMulai . ' - ' . $waktuSelesai . '  ' . $tanggal;
                     })
                     ->html(),
+        
+                TextColumn::make('gerbangAbsensi.pertemuan.pertemuanke')
+                    ->label('P')
+                    ->tooltip('Pertemuan Ke')
+                    ->sortable()
+                    ->copyable()
+                    ->searchable(),
             ])
 
             ->filters([
-                SelectFilter::make('nama_kelas')->label('Nama Kelas')->relationship('gerbangAbsensi.kelas', 'nama_kelas')->searchable(), 
-            SelectFilter::make('nama_mata_pelajaran')->label('Nama Mata Pelajaran')->relationship('ab.mataPelajaran', 'nama_mata_pelajaran')->searchable(), 
-            SelectFilter::make('pertemuan')->label('Pertemuan')->relationship('gerbangAbsensi.pertemuan', 'pertemuanke')->searchable()])
+                SelectFilter::make('nama_kelas')
+                    ->label('Nama Kelas')
+                    ->relationship('gerbangAbsensi.kelas', 'nama_kelas')
+                    ->searchable(), 
 
-            ->actions([Tables\Actions\EditAction::make(), Tables\Actions\DeleteAction::make()])
+                SelectFilter::make('nama_mata_pelajaran')
+                    ->label('Nama Mata Pelajaran')
+                    ->relationship('ab.mataPelajaran', 'nama_mata_pelajaran')
+                    ->searchable(), 
+                
+                SelectFilter::make('pertemuan')
+                    ->label('Pertemuan')
+                    ->relationship('gerbangAbsensi.pertemuan', 'pertemuanke')
+                    ->searchable()
+                ])
 
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+            ->actions([
+                // Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+            ])
+
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                    \pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction::make()
+                        ->label('Download Excel')
+                        ->color('primary')
+                ])
+            ]);
     }
 
     public static function getPages(): array

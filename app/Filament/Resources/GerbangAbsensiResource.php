@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use Carbon\Carbon;
-use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -11,16 +10,17 @@ use App\Models\GerbangAbsensi;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\DateTimePicker;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\GerbangAbsensiResource\Pages;
-use App\Filament\Resources\GerbangAbsensiResource\RelationManagers;
 
 class GerbangAbsensiResource extends Resource
 {
     protected static ?string $model = GerbangAbsensi::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Presensi';
+    protected static ?string $label = 'Jalankan Presensi';
+
+    
     public static function form(Form $form): Form
     {
         return $form
@@ -54,31 +54,15 @@ class GerbangAbsensiResource extends Resource
     {
         return $table
             ->columns([
+                
                 TextColumn::make('waktu_mulai')
-                ->formatStateUsing(function ($state) {
-                    return '<div class="text-center">'
-                        . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>'
-                        . Carbon::parse($state)->translatedFormat('d F Y')
-                        . '</div>';
-                })
-                ->html(),
-
-
-                TextColumn::make('waktu_selesai')
-                ->formatStateUsing(function ($state) {
-                    return '<div class="text-center">'
-                        . Carbon::parse($state)->translatedFormat('H:i') . ' ' . Carbon::parse($state)->translatedFormat('l') . '<br>'
-                        . Carbon::parse($state)->translatedFormat('d F Y')
-                        . '</div>';
-                })
-                ->html(),
-
-                TextColumn::make('pertemuan.pertemuanke')
-                ->label('Pertemuan')
-                    ->copyable()
-                    ->copyMessage('Berhasil Menyalin')
-                    ->sortable()
-                    ->searchable(),
+                    ->formatStateUsing(function ($state, $record) {
+                        $waktuMulai = Carbon::parse($record->waktu_mulai)->translatedFormat('H:i');
+                        $waktuSelesai = Carbon::parse($record->waktu_selesai)->translatedFormat('H:i');
+                        $tanggal = Carbon::parse($record->waktu_selesai)->translatedFormat('l, d F Y');
+                        
+                        return $waktuMulai . ' - ' . $waktuSelesai . ' ' . $tanggal;
+                }),
 
                 TextColumn::make('kelas.nama_kelas')
                 ->label('Nama Kelas')
@@ -93,26 +77,52 @@ class GerbangAbsensiResource extends Resource
                     ->copyMessage('Berhasil Menyalin Nama Mata Pelajaran')
                     ->sortable()
                     ->searchable(),
+
+                TextColumn::make('pertemuan.pertemuanke')
+                ->label('P')
+                    ->copyable()
+                    ->copyMessage('Berhasil Menyalin')
+                    ->sortable()
+                    ->searchable()
+                    ->tooltip('Pertemuan Ke')
+                    ->searchable(),
             ])
+
             ->filters([
                 //
             ])
+
             ->actions([
+                Tables\Actions\Action::make('deteksiAbsensi')
+                    ->label('Lihat Hasil')
+                    ->color('primary')
+                    ->icon('heroicon-o-eye')
+                    ->tooltip('Lihat Hasil Rekap Presensi Secara Detail')
+                    ->url(fn () => url('/admin/absensis/deteksi-absensi')),
                 Tables\Actions\EditAction::make(),
-                // Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
+
+            ->headerActions([
+                Tables\Actions\Action::make('deteksiAbsensi')
+                    ->label('Jalankan Presensi')
+                    ->url(fn () => url('/admin/absensis/create'))
+                    ->tooltip('Sebelum Memulai Menjalankan Presensi Pastikan Anda Membuka Gerbang Prensesi Terlebih Dahulu')
+                    // ->url(fn () => url('/admin/absensis/deteksi-absensi'))
+                    ->openUrlInNewTab(),
+                
+                Tables\Actions\Action::make('deteksiAbsensi')
+                    ->label('Buka Gerbang Presensi')
+                    ->url(fn () => url('/admin/gerbang-absensis/create'))
+                    // ->url(fn () => url('/admin/absensis/deteksi-absensi'))
+            ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+                
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
@@ -121,6 +131,8 @@ class GerbangAbsensiResource extends Resource
             'index' => Pages\ListGerbangAbsensis::route('/'),
             'create' => Pages\CreateGerbangAbsensi::route('/create'),
             'edit' => Pages\EditGerbangAbsensi::route('/{record}/edit'),
+            // 'DeteksiAbsensi' => Pages\DeteksiAbsensi::route('/deteksi-absensi'),
+            // 'create' => \App\Filament\Resources\AbsensiResource\Pages\CreateAbsensi::route('/create'),
         ];
     }
 }

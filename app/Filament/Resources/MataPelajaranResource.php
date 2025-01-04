@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -10,16 +9,15 @@ use App\Models\MataPelajaran;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MataPelajaranResource\Pages;
-use App\Filament\Resources\MataPelajaranResource\RelationManagers;
 
 class MataPelajaranResource extends Resource
 {
     protected static ?string $model = MataPelajaran::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Data Sekolah';
+    protected static ?string $label = 'Mata Pelajaran';
 
     public static function form(Form $form): Form
     {
