@@ -20,33 +20,33 @@ class GerbangAbsensiResource extends Resource
     protected static ?string $navigationGroup = 'Presensi';
     protected static ?string $label = 'Jalankan Presensi';
 
-    
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 DateTimePicker::make('waktu_mulai')
-                ->label('Dimulai Pada')
-                ->required(),
+                    ->label('Dimulai Pada')
+                    ->required(),
 
                 DateTimePicker::make('waktu_selesai')
-                ->label('Berakhir Pada')
-                ->required(),
+                    ->label('Berakhir Pada')
+                    ->required(),
 
                 Select::make('kelas_id')
-                ->required()
-                ->label('Nama Kelas')
-                ->relationship('kelas', 'nama_Kelas'),
+                    ->required()
+                    ->label('Nama Kelas')
+                    ->relationship('kelas', 'nama_Kelas'),
 
                 Select::make('mata_pelajaran_id')
-                ->required()
-                ->label('Nama Mata Pelajaran')
-                ->relationship('matapelajaran', 'nama_mata_pelajaran'),
+                    ->required()
+                    ->label('Nama Mata Pelajaran')
+                    ->relationship('matapelajaran', 'nama_mata_pelajaran'),
 
                 Select::make('pertemuan_id')
-                ->required()
-                ->label('Pertemuan Ke')
-                ->relationship('pertemuan', 'pertemuanke'),
+                    ->required()
+                    ->label('Pertemuan Ke')
+                    ->relationship('pertemuan', 'pertemuanke'),
             ]);
     }
 
@@ -54,32 +54,32 @@ class GerbangAbsensiResource extends Resource
     {
         return $table
             ->columns([
-                
+
                 TextColumn::make('waktu_mulai')
                     ->formatStateUsing(function ($state, $record) {
                         $waktuMulai = Carbon::parse($record->waktu_mulai)->translatedFormat('H:i');
                         $waktuSelesai = Carbon::parse($record->waktu_selesai)->translatedFormat('H:i');
                         $tanggal = Carbon::parse($record->waktu_selesai)->translatedFormat('l, d F Y');
-                        
+
                         return $waktuMulai . ' - ' . $waktuSelesai . ' ' . $tanggal;
-                }),
+                    }),
 
                 TextColumn::make('kelas.nama_kelas')
-                ->label('Nama Kelas')
+                    ->label('Nama Kelas')
                     ->copyable()
                     ->copyMessage('Berhasil Menyalin Nama Kelas')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('matapelajaran.nama_mata_pelajaran')
-                ->label('Nama Mata Pelajaran')
+                    ->label('Nama Mata Pelajaran')
                     ->copyable()
                     ->copyMessage('Berhasil Menyalin Nama Mata Pelajaran')
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('pertemuan.pertemuanke')
-                ->label('P')
+                    ->label('P')
                     ->copyable()
                     ->copyMessage('Berhasil Menyalin')
                     ->sortable()
@@ -93,12 +93,7 @@ class GerbangAbsensiResource extends Resource
             ])
 
             ->actions([
-                Tables\Actions\Action::make('deteksiAbsensi')
-                    ->label('Lihat Hasil')
-                    ->color('primary')
-                    ->icon('heroicon-o-eye')
-                    ->tooltip('Lihat Hasil Rekap Presensi Secara Detail')
-                    ->url(fn () => url('/admin/absensis/deteksi-absensi')),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -106,24 +101,28 @@ class GerbangAbsensiResource extends Resource
             ->headerActions([
                 Tables\Actions\Action::make('deteksiAbsensi')
                     ->label('Jalankan Presensi')
-                    ->url(fn () => url('/admin/absensis/create'))
+                    ->url(fn() => url('/admin/absensis/create'))
                     ->tooltip('Sebelum Memulai Menjalankan Presensi Pastikan Anda Membuka Gerbang Prensesi Terlebih Dahulu')
                     // ->url(fn () => url('/admin/absensis/deteksi-absensi'))
                     ->openUrlInNewTab(),
-                
+
                 Tables\Actions\Action::make('deteksiAbsensi')
                     ->label('Buka Gerbang Presensi')
-                    ->url(fn () => url('/admin/gerbang-absensis/create'))
-                    // ->url(fn () => url('/admin/absensis/deteksi-absensi'))
+                    ->url(fn() => url('/admin/gerbang-absensis/create'))
+                // ->url(fn () => url('/admin/absensis/deteksi-absensi'))
+
+
             ])
 
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-                
+
             ]);
     }
+
+
 
     public static function getPages(): array
     {
@@ -131,8 +130,7 @@ class GerbangAbsensiResource extends Resource
             'index' => Pages\ListGerbangAbsensis::route('/'),
             'create' => Pages\CreateGerbangAbsensi::route('/create'),
             'edit' => Pages\EditGerbangAbsensi::route('/{record}/edit'),
-            // 'DeteksiAbsensi' => Pages\DeteksiAbsensi::route('/deteksi-absensi'),
-            // 'create' => \App\Filament\Resources\AbsensiResource\Pages\CreateAbsensi::route('/create'),
+            'view' => Pages\DetailGerbangAbsensi::route('/{record}/view'),
         ];
     }
 }

@@ -13,7 +13,7 @@ class GerbangAbsensi extends Model
 
     public function kelas()
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsTo(Kelas::class, 'kelas_id', 'id');
     }
     
     public function matapelajaran()
