@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Resources\SiswaResource\Pages;
 
 class SiswaResource extends Resource
@@ -42,25 +43,32 @@ class SiswaResource extends Resource
                 ->copyable()
                 ->copyMessage('Berhasil Menyalin')
                 ->sortable()
+                ->toggleable(isToggledHiddenByDefault:false)
                 ->searchable(),
                 
                 TextColumn::make('kelas.nama_kelas')
                 ->Copyable()
                 ->copyMessage('Berhasil Menyalin')
                 ->sortable()
+                ->toggleable(isToggledHiddenByDefault:false)
                 ->searchable(),
                 
                 TextColumn::make('rfid_id')
                 ->Copyable()
                 ->copyMessage('Berhasil Menyalin')
                 ->sortable()
+                ->toggleable(isToggledHiddenByDefault:true)
                 ->searchable(),
                 
                 ])
-                
+              
             ->filters([
-                //
+                SelectFilter::make('kelas')
+                    ->label('Nama Kelas')
+                    ->relationship('kelas', 'nama_kelas')
+                    ->searchable(),
             ])
+            
             ->actions([Tables\Actions\EditAction::make(), Tables\Actions\DeleteAction::make()])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
     }

@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\KelasResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -43,10 +44,13 @@ class KelasResource extends Resource
                     ->copyable()
                     ->copyMessage('Berhasil Menyalin Nama Kelas')
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault:false)
                     ->searchable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('nama_kelas')
+                    ->label('Nama Kelas')
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -132,17 +132,20 @@ class AbsensiResource extends Resource
 
                 TextColumn::make('siswa.nama')
                     ->label('Nama Siswa')
+                    ->wrap()
                     ->copyable()
                     ->copyMessage('Berhasil Menyalin Nama Siswa')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault:false),
 
                 TextColumn::make('gerbangAbsensi.mataPelajaran.nama_mata_pelajaran')
                     ->label('Mata Pelajaran')
                     ->copyable()
                     ->copyMessage('Berhasil Menyalin')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault:false),
 
                 TextColumn::make('created_at')
                     ->label('Waktu Presensi')
@@ -153,7 +156,8 @@ class AbsensiResource extends Resource
                             Carbon::parse($state)->translatedFormat('l') . ' ' . 
                             Carbon::parse($state)->translatedFormat('d F Y');
                         })
-                    ->html(),
+                    ->html()
+                    ->toggleable(isToggledHiddenByDefault:false),
                     
                 TextColumn::make('status_kehadiran')
                     ->badge()
@@ -165,7 +169,8 @@ class AbsensiResource extends Resource
                     )
                     ->label('Status')
                     ->sortable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault:false),
 
                     TextColumn::make('gerbangAbsensi.waktu_mulai')
                     ->label('Waktu Mulai & Berakhirnya Presensi')
@@ -178,14 +183,15 @@ class AbsensiResource extends Resource
                         
                         return $waktuMulai . ' - ' . $waktuSelesai . '  ' . $tanggal;
                     })
-                    ->html(),
+                    ->html()
+                    ->toggleable(isToggledHiddenByDefault:false),
         
                 TextColumn::make('gerbangAbsensi.pertemuan.pertemuanke')
                     ->label('P')
                     ->tooltip('Pertemuan Ke')
                     ->sortable()
                     ->copyable()
-                    ->searchable(),
+                    ->searchable()->toggleable(isToggledHiddenByDefault:false),
             ])
 
             ->filters([
@@ -206,8 +212,10 @@ class AbsensiResource extends Resource
                 ])
 
             ->actions([
-                // Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                ])
             ])
 
             ->bulkActions([

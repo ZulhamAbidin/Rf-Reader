@@ -10,9 +10,7 @@ return new class extends Migration
     {
         Schema::create('pertemuan', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('gerbang_absensi_id')->constrained('gerbangabsensi')->onDelete('cascade');
             $table->date('tanggal');
-            $table->text('deskripsi')->nullable();
             $table->text('pertemuanke');
             $table->timestamps();
         });

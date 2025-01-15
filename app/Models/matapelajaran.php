@@ -11,8 +11,13 @@ class matapelajaran extends Model
     protected $table = 'matapelajaran';
     protected $fillable = ['nama_mata_pelajaran'];
 
+    // public function gerbangAbsensi()
+    // {
+    //     return $this->hasMany(GerbangAbsensi::class);
+    // }
+
     public function gerbangAbsensi()
     {
-        return $this->hasMany(GerbangAbsensi::class);
+        return $this->hasMany(GerbangAbsensi::class, 'mata_pelajaran_id');
     }
 }

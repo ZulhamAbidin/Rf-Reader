@@ -9,125 +9,126 @@ class SiswaSeeder extends Seeder
 {
     public function run()
     {
+        //NAMA SISWA KELAS X PENGEMBANGAN PERANGKAT LUNAK (A)
         Siswa::create([
-            'nama' => 'John Doe',
-            'rfid_id' => 'RFID001',
-            'kelas_id' => 1, // Kelas 1A
+            'nama' => 'ZULHAM ABIDIN',
+            'rfid_id' => '1929042001',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'Jane Smith',
-            'rfid_id' => 'RFID002',
-            'kelas_id' => 1, // Kelas 1B
+            'nama' => 'MUHAMMAD SYABAN RAHMATULLAH',
+            'rfid_id' => '1929042002',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'Michael Johnson',
-            'rfid_id' => 'RFID003',
-            'kelas_id' => 1, // Kelas 2A
+            'nama' => 'MUHAMMAD MUFLIH ALGHIFARI SALAM',
+            'rfid_id' => '1929042003',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'Emily Davis',
-            'rfid_id' => 'RFID004',
-            'kelas_id' => 1, // Kelas 2B
+            'nama' => 'MUHAMMAD ANDRI APRIADI',
+            'rfid_id' => '1929042004',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'David Brown',
-            'rfid_id' => 'RFID005',
-            'kelas_id' => 1, // Kelas 3A
+            'nama' => 'MUHAMMAD ARFAH AWALUDDIN TADDA',
+            'rfid_id' => '1929042005',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'Sophia Martinez',
-            'rfid_id' => 'RFID006',
-            'kelas_id' => 1, // Kelas 3B
+            'nama' => 'MUHAMMAD RIFQI FADHIL',
+            'rfid_id' => '1929042006',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'James Wilson',
-            'rfid_id' => 'RFID007',
-            'kelas_id' => 1, // Kelas 4A
+            'nama' => 'MUHAMMAD ALISRA',
+            'rfid_id' => '1929042007',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'Isabella Moore',
-            'rfid_id' => 'RFID008',
-            'kelas_id' => 1, // Kelas 4B
+            'nama' => 'WAHYULLAH',
+            'rfid_id' => '1929042008',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'Liam Taylor',
-            'rfid_id' => 'RFID009',
-            'kelas_id' => 1, // Kelas 5A
+            'nama' => 'WAYHU DJUDS',
+            'rfid_id' => '1929042009',
+            'kelas_id' => 1,
         ]);
 
         Siswa::create([
-            'nama' => 'Ava Anderson',
-            'rfid_id' => 'RFID010',
-            'kelas_id' => 1, // Kelas 5B
+            'nama' => 'YUSRI',
+            'rfid_id' => '1929042010',
+            'kelas_id' => 1,
+        ]);
+
+        //NAMA SISWA KELAS X PENGEMBANGAN PERANGKAT LUNAK (B)
+        Siswa::create([
+            'nama' => 'ANNISA SEPTIANI KAMAL',
+            'rfid_id' => '1929042011',
+            'kelas_id' => 2,
         ]);
 
         Siswa::create([
-            'nama' => 'Benjamin Thomas',
-            'rfid_id' => 'RFID011',
-            'kelas_id' => 2, // Kelas 6A
+            'nama' => 'ALIFYARAMADHANI HIDAYAH',
+            'rfid_id' => '1929042012',
+            'kelas_id' => 2,
         ]);
 
         Siswa::create([
-            'nama' => 'Charlotte Jackson',
-            'rfid_id' => 'RFID012',
-            'kelas_id' => 2, // Kelas 6B
+            'nama' => 'ASTRI AYUNINGSIH',
+            'rfid_id' => '1929042013',
+            'kelas_id' => 2,
         ]);
 
         Siswa::create([
-            'nama' => 'Ethan Harris',
-            'rfid_id' => 'RFID013',
-            'kelas_id' => 2, // Kelas 7A
+            'nama' => 'SITI MARYAM',
+            'rfid_id' => '1929042014',
+            'kelas_id' => 2,
         ]);
 
         Siswa::create([
-            'nama' => 'Mia Clark',
-            'rfid_id' => 'RFID014',
-            'kelas_id' => 2, // Kelas 7B
+            'nama' => 'SYAMSINAR',
+            'rfid_id' => '1929042015',
+            'kelas_id' => 2,
         ]);
 
         Siswa::create([
-            'nama' => 'Oliver Lewis',
-            'rfid_id' => 'RFID015',
-            'kelas_id' => 2, // Kelas 8A
-        ]);
-
-        Siswa::create([
-            'nama' => 'Amelia Walker',
-            'rfid_id' => 'RFID016',
-            'kelas_id' => 2, // Kelas 8B
+            'nama' => 'KAK RAFIKAH',
+            'rfid_id' => '1929042016',
+            'kelas_id' => 2,
         ]);
         
         Siswa::create([
-            'nama' => 'Mason Young',
-            'rfid_id' => 'RFID017',
-            'kelas_id' => 2, // Kelas 9A
+            'nama' => 'SUKMA',
+            'rfid_id' => '1929042017',
+            'kelas_id' => 2,
         ]);
         
         Siswa::create([
-            'nama' => 'Harper King',
-            'rfid_id' => 'RFID018',
-            'kelas_id' => 2, // Kelas 9B
+            'nama' => 'UNA',
+            'rfid_id' => '1929042018',
+            'kelas_id' => 2,
         ]);
 
         Siswa::create([
-            'nama' => 'Alexander Scott',
-            'rfid_id' => 'RFID019',
-            'kelas_id' => 2, // Kelas 10A
+            'nama' => 'KAK TITI',
+            'rfid_id' => '1929042019',
+            'kelas_id' => 2,
         ]);
 
         Siswa::create([
-            'nama' => 'Chloe Green',
-            'rfid_id' => 'RFID020',
-            'kelas_id' => 2, // Kelas 10B
-        ]);
-        
+            'nama' => 'KAK RISKA',
+            'rfid_id' => '1929042020',
+            'kelas_id' => 2,
+        ]);   
     }
 }

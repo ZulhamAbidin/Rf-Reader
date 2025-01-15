@@ -25,19 +25,10 @@ class PertemuanResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            
-        Textarea::make('deskripsi')
-            ->label('Deskripsi')
-            ->autosize()
-            ->required()
-            ->columnSpan([
-                'sm' => 2,
-                'xl' => 3,
-                '2xl' => 4,
-            ]),
 
         TextInput::make('pertemuanke')
             ->label('Pertemuan Ke')
+            ->placeholder('Contoh = Pertemuan 1, Pengenalan Dasar Dasar HTML')
             ->required(),
 
         DatePicker::make('tanggal')
@@ -51,17 +42,20 @@ class PertemuanResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('deskripsi')
+                TextColumn::make('pertemuanke')
+                ->label('Pertemuan Ke')
                 ->copyable()
                 ->copyMessage('Berhasil Menyalin')
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->toggleable(isToggledHiddenByDefault:false),
 
                 TextColumn::make('tanggal')
                 ->formatStateUsing(function ($state) {
                     return '<div class="text-center">' . Carbon::parse($state)->translatedFormat('l, d F Y') . '</div>';
                 })
-                ->html(),            
+                ->html()
+                ->toggleable(isToggledHiddenByDefault:false),       
                 
             ])
             ->filters([

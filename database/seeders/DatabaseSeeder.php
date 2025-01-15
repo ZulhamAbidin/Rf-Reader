@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
             KelasSeeder::class,
             SiswaSeeder::class,
             PertemuanSeeder::class,
-            GerbangAbsensiSeeder::class,
-            AbsensiSeeder::class,
+            // GerbangAbsensiSeeder::class,
+            // AbsensiSeeder::class,
             UserSeeder::class,
         ]);
     }

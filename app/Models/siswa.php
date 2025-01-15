@@ -10,20 +10,19 @@ class siswa extends Model
     use HasFactory;
     protected $table = 'siswa';
     protected $fillable = ['nama', 'rfid_id', 'kelas_id'];
-
+    
     public function kelas()
     {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
-    public function gerbangAbsensi()
-{
-    return $this->hasMany(GerbangAbsensi::class);
-}
+    // public function absensi()
+    // {
+    //     return $this->hasMany(Absensi::class);
+    // }
 
-
-    public function absensis()
+    public function absensi()
     {
-        return $this->hasMany(Absensi::class);
+        return $this->hasMany(Absensi::class, 'siswa_id');
     }
 }

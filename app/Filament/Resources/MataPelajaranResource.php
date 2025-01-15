@@ -9,6 +9,7 @@ use App\Models\MataPelajaran;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Resources\MataPelajaranResource\Pages;
 
 class MataPelajaranResource extends Resource
@@ -37,10 +38,13 @@ class MataPelajaranResource extends Resource
                 ->copyable()
                 ->copyMessage('Berhasil Menyalin Nama Pelajaran')
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->toggleable(isToggledHiddenByDefault:false),
             ])
             ->filters([
-                //
+                SelectFilter::make('nama_mata_pelajaran')
+                    ->label('Nama Mata Pelajaran')
+                    ->searchable(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

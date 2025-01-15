@@ -14,12 +14,12 @@ class absensi extends Model
 
     public function siswa()
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(Siswa::class, 'siswa_id');
     }
     
     public function gerbangAbsensi()
     {
-        return $this->belongsTo(GerbangAbsensi::class);
+        return $this->belongsTo(GerbangAbsensi::class, 'gerbang_absensi_id');
     }
 
     protected static function booted()

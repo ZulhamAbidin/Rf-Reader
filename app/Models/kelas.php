@@ -13,6 +13,11 @@ class kelas extends Model
 
     public function siswa()
     {
-        return $this->hasMany(Siswa::class);
+        return $this->hasMany(Siswa::class, 'kelas_id');
+    }
+
+    public function gerbangAbsensi()
+    {
+        return $this->hasMany(GerbangAbsensi::class, 'kelas_id');
     }
 }
