@@ -31,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->databaseNotifications()
-            // ->topNavigation()
+            ->topNavigation()
             ->navigationGroups([
                 'Presensi',
                 'Data Sekolah'
