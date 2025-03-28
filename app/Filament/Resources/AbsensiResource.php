@@ -12,6 +12,8 @@ use App\Models\GerbangAbsensi;
 use Illuminate\Support\Carbon;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\View;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
@@ -20,7 +22,6 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Validator;
 use App\Filament\Resources\AbsensiResource\Pages;
-use Filament\Forms\Components\View;
 
 // oksih
 
@@ -29,7 +30,14 @@ class AbsensiResource extends Resource
     protected static ?string $model = Absensi::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Presensi';
-    protected static ?string $label = 'Semua Hasil Presensi';
+
+    public static function getBreadcrumb(): string
+    {
+        return 'Jalankan Absensi';
+    }
+
+
+
 
     public static function getNavigationBadge(): ?string
     {
@@ -42,126 +50,139 @@ class AbsensiResource extends Resource
             Section::make('Tempelkan Kartu')
                 ->schema([
                     View::make('filament.components.rfid-image'),
-                    TextInput::make('rfid_id')
-                        ->label('RFID ID')
-                        ->reactive()
-                        ->autofocus()
-                        ->afterStateUpdated(function ($state, $set) {
-                            if (empty($state)) return;
-                            $siswa = Siswa::where('rfid_id', $state)
-                                ->lockForUpdate()
-                                ->first();
-                            if (!$siswa) {
-                                self::resetFields($set);
-                                Notification::make()
-                                    ->title('Kartu Tidak Terdaftar!')
-                                    ->body('RFID: ' . $state . ' tidak dikenali')
-                                    ->danger()
-                                    ->send();
-                                return;
-                            }
-                            $set('siswa_id', $siswa->id);
-                            $set('nama', $siswa->nama);
-                            $set('kelas', optional($siswa->kelas)->nama ?? '-');
-                            $set('status_kehadiran', 'Hadir');
-                            $set('waktu_kehadiran', now()->format('H:i:s'));
-                            $currentTime = Carbon::now();
-                            $gerbang = GerbangAbsensi::where('kelas_id', $siswa->kelas_id)
-                                ->where('waktu_mulai', '<=', $currentTime)
-                                ->where('waktu_selesai', '>=', $currentTime)
-                                ->first();
-
-                            if (!$gerbang) {
-                                self::resetFields($set);
-                                Notification::make()
-                                    ->title('Absensi Ditolak')
-                                    ->body('Tidak ada sesi absensi aktif untuk kelas ini')
-                                    ->warning()
-                                    ->send();
-                                return;
-                            }
-
-                            DB::transaction(function () use ($siswa, $gerbang, $set, $currentTime) {
-                                try {
-                                    $siswaKelas = Siswa::where('kelas_id', $gerbang->kelas_id)->get();
-
-                                    foreach ($siswaKelas as $siswaAlfa) {
-                                        $exists = Absensi::where('siswa_id', $siswaAlfa->id)
-                                            ->where('gerbang_absensi_id', $gerbang->id)
-                                            ->exists();
-
-                                        if (!$exists) {
-                                            Absensi::create([
-                                                'siswa_id' => $siswaAlfa->id,
-                                                'gerbang_absensi_id' => $gerbang->id,
-                                                'status_kehadiran' => 'alfa',
-                                                'waktu_kehadiran' => null,
-                                            ]);
-                                        }
+                    Grid::make(3)
+                        ->schema([
+                            TextInput::make('rfid_id')
+                                ->label('RFID ID')
+                                ->columnSpan(1)
+                                ->reactive()
+                                ->autofocus()
+                                ->afterStateUpdated(function ($state, $set) {
+                                    if (empty($state)) return;
+                                    $siswa = Siswa::where('rfid_id', $state)
+                                        ->lockForUpdate()
+                                        ->first();
+                                    if (!$siswa) {
+                                        self::resetFields($set);
+                                        Notification::make()
+                                            ->title('Kartu Tidak Terdaftar!')
+                                            ->body('RFID: ' . $state . ' tidak dikenali')
+                                            ->danger()
+                                            ->send();
+                                        return;
                                     }
-
-                                    $absensiSiswa = Absensi::where('siswa_id', $siswa->id)
-                                        ->where('gerbang_absensi_id', $gerbang->id)
+                                    $set('siswa_id', $siswa->id);
+                                    $set('nama', $siswa->nama);
+                                    $set('kelas', optional($siswa->kelas)->nama ?? '-');
+                                    $set('status_kehadiran', 'Hadir');
+                                    $set('waktu_kehadiran', now()->format('H:i:s'));
+                                    $currentTime = Carbon::now();
+                                    $gerbang = GerbangAbsensi::where('kelas_id', $siswa->kelas_id)
+                                        ->where('waktu_mulai', '<=', $currentTime)
+                                        ->where('waktu_selesai', '>=', $currentTime)
                                         ->first();
 
-                                    if ($absensiSiswa && $absensiSiswa->status_kehadiran === 'hadir') {
+                                    if (!$gerbang) {
+                                        self::resetFields($set);
                                         Notification::make()
-                                            ->title('Peringatan')
-                                            ->body($siswa->nama . ' sudah melakukan absensi')
+                                            ->title('Absensi Ditolak')
+                                            ->body('Tidak ada sesi absensi aktif untuk kelas ini')
                                             ->warning()
                                             ->send();
                                         return;
                                     }
 
-                                    Absensi::where('siswa_id', $siswa->id)
-                                        ->where('gerbang_absensi_id', $gerbang->id)
-                                        ->update([
-                                            'status_kehadiran' => 'hadir',
-                                            'waktu_kehadiran' => $currentTime,
-                                        ]);
+                                    DB::transaction(function () use ($siswa, $gerbang, $set, $currentTime) {
+                                        try {
+                                            $siswaKelas = Siswa::where('kelas_id', $gerbang->kelas_id)->get();
 
-                                    Notification::make()
-                                        ->title('Absensi Berhasil')
-                                        ->body($siswa->nama . ' tercatat hadir')
-                                        ->success()
-                                        ->send();
-                                } catch (\Exception $e) {
-                                    Notification::make()
-                                        ->title('Error Sistem')
-                                        ->body($e->getMessage())
-                                        ->danger()
-                                        ->send();
-                                }
-                            });
+                                            foreach ($siswaKelas as $siswaAlfa) {
+                                                $exists = Absensi::where('siswa_id', $siswaAlfa->id)
+                                                    ->where('gerbang_absensi_id', $gerbang->id)
+                                                    ->exists();
 
-                            self::resetFields($set);
-                        }),
+                                                if (!$exists) {
+                                                    Absensi::create([
+                                                        'siswa_id' => $siswaAlfa->id,
+                                                        'gerbang_absensi_id' => $gerbang->id,
+                                                        'status_kehadiran' => 'alfa',
+                                                        'waktu_kehadiran' => null,
+                                                    ]);
+                                                }
+                                            }
 
-                        Hidden::make('siswa_id')
-                        ->required()
-                        ->rules(['exists:siswa,id']),
-                    TextInput::make('nama')
-                        ->label('Nama Siswa')
-                        ->hidden()
-                        ->formatStateUsing(fn($record) => $record?->siswa?->nama)
-                        ->readonly(),
-                    TextInput::make('kelas')
-                        ->label('Kelas')
-                        ->hidden()
-                        ->formatStateUsing(fn($record) => $record?->siswa?->kelas?->nama ?? 'Tidak ada kelas')
-                        ->readonly(),
+                                            $absensiSiswa = Absensi::where('siswa_id', $siswa->id)
+                                                ->where('gerbang_absensi_id', $gerbang->id)
+                                                ->first();
+
+                                            if ($absensiSiswa && $absensiSiswa->status_kehadiran === 'hadir') {
+                                                Notification::make()
+                                                    ->title('Peringatan')
+                                                    ->body($siswa->nama . ' sudah melakukan absensi')
+                                                    ->warning()
+                                                    ->send();
+                                                return;
+                                            }
+
+                                            Absensi::where('siswa_id', $siswa->id)
+                                                ->where('gerbang_absensi_id', $gerbang->id)
+                                                ->update([
+                                                    'status_kehadiran' => 'hadir',
+                                                    'waktu_kehadiran' => $currentTime,
+                                                ]);
+
+                                            Notification::make()
+                                                ->title('Absensi Berhasil')
+                                                ->body($siswa->nama . ' tercatat hadir')
+                                                ->success()
+                                                ->send();
+                                        } catch (\Exception $e) {
+                                            Notification::make()
+                                                ->title('Error Sistem')
+                                                ->body($e->getMessage())
+                                                ->danger()
+                                                ->send();
+                                        }
+                                    });
+
+                                    self::resetFields($set);
+                                }),
+
+                            TextInput::make('status_kehadiran')
+                                ->label('Status Kehadiran')
+                                ->readonly()
+                                ->columnSpan(1),
+                            TextInput::make('waktu_kehadiran')
+                                ->label('Waktu Kehadiran')
+                                ->readonly(),
+
+                            Hidden::make('siswa_id')
+                                ->required()
+                                ->columnSpan(1)
+                                ->rules(['exists:siswa,id']),
+                            TextInput::make('nama')
+                                ->label('Nama Siswa')
+                                ->hidden()
+                                ->formatStateUsing(fn($record) => $record?->siswa?->nama)
+                                ->readonly(),
+                            TextInput::make('kelas')
+                                ->label('Kelas')
+                                ->hidden()
+                                ->formatStateUsing(fn($record) => $record?->siswa?->kelas?->nama ?? 'Tidak ada kelas')
+                                ->readonly(),
+                        ])
                 ]),
 
-            Section::make('Detail Absensi')
-                ->description('Status kehadiran siswa setelah melakukan scan.')
-                ->schema([
-                    TextInput::make('status_kehadiran')
-                        ->label('Status Kehadiran')
-                        ->readonly(),
-                    TextInput::make('waktu_kehadiran')
-                        ->label('Waktu Kehadiran')
-                        ->readonly(),
-                ]),
+            // Section::make('Detail Absensi')
+            //     ->description('Status kehadiran siswa setelah melakukan scan.')
+            //     ->schema([
+            //         TextInput::make('status_kehadiran')
+            //             ->label('Status Kehadiran')
+            //             ->readonly(),
+            //         TextInput::make('waktu_kehadiran')
+            //             ->label('Waktu Kehadiran')
+            //             ->readonly(),
+            //     ]),
         ]);
     }
 
