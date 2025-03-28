@@ -13,9 +13,11 @@ use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Forms\Components\Placeholder;
 
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Resources\GerbangAbsensiResource\Pages;
 
@@ -25,6 +27,22 @@ class GerbangAbsensiResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Presensi';
     protected static ?string $label = 'Jalankan Presensi';
+
+    protected static ?string $recordTitleAttribute = 'MataPelajaran.nama_mata_pelajaran';
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('view')
+                ->label('Lihat Detail')
+                ->url(static::getUrl('view', ['record' => $record]), shouldOpenInNewTab: true)
+        ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

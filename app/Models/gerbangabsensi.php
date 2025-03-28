@@ -25,14 +25,10 @@ class GerbangAbsensi extends Model
     {
         return $this->belongsTo(Pertemuan::class, 'pertemuan_id');
     }
-
-    // public function absensi()
-    // {
-    //     return $this->hasMany(Absensi::class);
-    // }
     
     public function absensi()
     {
     return $this->hasMany(Absensi::class, 'gerbang_absensi_id');
-    }
+    }    
+    
 }

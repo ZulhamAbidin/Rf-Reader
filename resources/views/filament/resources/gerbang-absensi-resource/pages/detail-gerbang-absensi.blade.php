@@ -35,7 +35,7 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-3">
-                        Nama Siswa
+                        Nama Siswa Yang Melakukan Presensi
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Waktu Kehadiran
@@ -52,7 +52,7 @@
                         {{ $absen->siswa->nama }}
                     </th>
                     <td class="px-6 py-4">
-                        {{ $absen->waktu_kehadiran ? \Carbon\Carbon::parse($absen->waktu_kehadiran)->translatedFormat('d F Y, H:i') : '-' }}
+                        Hadir Pada {{ $absen->waktu_kehadiran ? \Carbon\Carbon::parse($absen->waktu_kehadiran)->translatedFormat('d F Y, H:i') : '-' }}
                     </td>
                     <td class="px-6 py-4">
                         {{ $absen->siswa->rfid_id }}
@@ -74,10 +74,10 @@
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-3">
-                        Nama Siswa
+                        Nama Siswa Yang Tidak Melakukan Presensi
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Waktu Kehadiran
+                        Status
                     </th>
                     <th scope="col" class="px-6 py-3">
                         RFID
@@ -91,7 +91,7 @@
                         {{ $absen->siswa->nama }}
                     </th>
                     <td class="px-6 py-4">
-                        {{ $absen->waktu_kehadiran ? \Carbon\Carbon::parse($absen->waktu_kehadiran)->translatedFormat('d F Y, H:i') : '-' }}
+                        Alpa
                     </td>
                     <td class="px-6 py-4">
                         {{ $absen->siswa->rfid_id }}

@@ -8,7 +8,9 @@ use Filament\Tables\Table;
 use App\Models\MataPelajaran;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
+use Filament\GlobalSearch\Actions\Action;
 use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Resources\MataPelajaranResource\Pages;
 
@@ -19,6 +21,22 @@ class MataPelajaranResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Data Sekolah';
     protected static ?string $label = 'Mata Pelajaran';
+    protected static ?string $recordTitleAttribute = 'nama_mata_pelajaran';
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            Action::make('index')
+                ->label('Lihat Detail')
+                ->url(static::getUrl('index', ['record' => $record]), shouldOpenInNewTab: true)
+        ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
 
     public static function form(Form $form): Form
     {

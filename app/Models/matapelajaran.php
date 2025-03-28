@@ -16,8 +16,13 @@ class matapelajaran extends Model
     //     return $this->hasMany(GerbangAbsensi::class);
     // }
 
+    // public function gerbangAbsensi()
+    // {
+    //     return $this->hasMany(GerbangAbsensi::class, 'mata_pelajaran_id');
+    // }
+
     public function gerbangAbsensi()
     {
-        return $this->hasMany(GerbangAbsensi::class, 'mata_pelajaran_id');
+        return $this->belongsTo(GerbangAbsensi::class);
     }
 }
